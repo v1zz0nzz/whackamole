@@ -1,0 +1,122 @@
+import pygame
+import random
+
+pygame.init()
+screen = pygame.display.set_mode((800, 800))
+pygame.display.set_caption("Whack-A-Mole")
+clock = pygame.time.Clock()
+
+circx = random.randrange(100, 700)
+circy = random.randrange(100, 700)
+circx2 = random.randrange(100, 700)
+circy2 = random.randrange(100, 700)
+skunkx = random.randrange(100, 700)
+skunky = random.randrange(100, 700)
+
+color = (random.randrange(20, 250), random.randrange(20, 250), random.randrange(20, 250))
+drawn = True
+drawn1 = True
+ticker = 0 
+ticker1 = 0 
+score = 0
+outline = False
+
+font = pygame.font.SysFont(None, 48)
+hit = pygame.mixer.Sound("hitmolewam.mp3")
+miss = pygame.mixer.Sound("missedmolewam.mp3")
+pygame.mixer.music.load("backgroundwam.mp3")
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(-1)
+
+
+running = True
+while running:
+    clock.tick(60)
+    
+
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    if event.type == pygame.MOUSEBUTTONDOWN and drawn:
+        mx, my = pygame.mouse.get_pos()
+        if(mx - circx)**2 + (my-circy) ** 2 <=50 ** 2:
+            if outline == False:
+                score += 1
+                print(score)
+                hit.play()
+            ticker = 0
+            ticker1 = 0
+            outline = True
+        else:
+            miss.play()
+            
+            
+    if event.type == pygame.MOUSEBUTTONDOWN and drawn:
+        mx, my = pygame.mouse.get_pos()
+        if(mx - skunkx)**2 + (my- skunky) ** 2 <=50 ** 2:
+            if outline == False:
+                score -= 1
+                print(score)
+            ticker1 = 0
+            outline = True        
+
+
+
+
+
+    #update section
+    ticker += 1
+    if drawn and ticker > 80: 
+        drawn = False
+        outline = False
+        ticker = 0
+        circx = random.randrange(100, 700)
+        circy = random.randrange(100, 700)
+        color = (random.randrange(20, 250), random.randrange(20, 250), random.randrange(20, 250))  
+
+    elif not drawn and ticker > 10: 
+        drawn = True
+        ticker = 0
+        
+    ticker1 += 1
+    if drawn1 and ticker1 > 80: 
+        drawn1 = False
+        outline = False
+        ticker1 = 0
+        skunkx = random.randrange(100, 700)
+        skunky = random.randrange(100, 700)
+        
+        
+    elif not drawn1 and ticker1 > 10: 
+        drawn1 = True
+        ticker1 = 0
+         
+    
+    
+    
+
+    #render section
+    screen.fill((20, 20, 20))
+    if drawn:  
+        pygame.draw.circle(screen, color, (circx, circy), 50)
+    if outline:
+        pygame.draw.circle(screen, (255, 255, 255), (circx, circy), 50, 3)
+        
+    if drawn1: 
+        pygame.draw.circle(screen, (50, 50, 50), (skunkx, skunky), 50)
+        print(skunkx, skunky)
+        
+    
+    #if drawn:  
+    #    pygame.draw.circle(screen, color, (circx2, circy2), 50)
+ #   if outline:
+ #       pygame.draw.circle(screen, (255, 255, 255), (circx2, circy2), 50, 3)
+    score_text = font.render("Score: " + str(score), True, (255, 255, 255))
+    screen.blit(score_text, (20, 20))
+
+
+    pygame.display.flip()
+
+pygame.quit()
